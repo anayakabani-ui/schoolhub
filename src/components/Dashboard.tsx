@@ -1,5 +1,7 @@
-import React from 'react';
-import { Calendar, BookOpen, Clock, TrendingUp, Plus, Bell } from 'lucide-react';
+// src/components/Dashboard.tsx
+
+import React, { useState, useEffect } from 'react';
+import { Calendar, BookOpen, Clock, TrendingUp, Plus, Bell, Droplet, Moon } from 'lucide-react';
 import { Subject, Assignment } from '../types';
 
 interface DashboardProps {
@@ -9,13 +11,26 @@ interface DashboardProps {
   onViewTimetable: () => void;
 }
 
+// Placeholder for now, replace with your actual API call
+const fetchUserPreferences = async () => {
+  return {
+    showSchoolHub: true,
+    waterIntakeCups: 4,
+    lastSleepEntry: { totalHours: 7.5, notes: "Good sleep" }
+  };
+};
+
 export default function Dashboard({ subjects, assignments, onViewAssignments, onViewTimetable }: DashboardProps) {
+  const [showSchoolHub, setShowSchoolHub] = useState(false);
+  const [waterIntake, setWaterIntake] = useState(0);
+  const [lastSleepEntry, setLastSleepEntry] = useState(null);
+  
   const upcomingAssignments = assignments
     .filter(a => !a.completed)
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     .slice(0, 3);
 
-  const completionRate = assignments.length > 0 
+  const completionRate = assignments.length > 0
     ? Math.round((assignments.filter(a => a.completed).length / assignments.length) * 100)
     : 0;
 
@@ -25,12 +40,32 @@ export default function Dashboard({ subjects, assignments, onViewAssignments, on
     return dueDate === today && !a.completed;
   });
 
+  const handleWaterIncrement = () => {
+    // TODO: Implement the actual PATCH request here
+    const newCount = waterIntake + 1;
+    setWaterIntake(newCount);
+  };
+  
+  useEffect(() => {
+    const loadPreferences = async () => {
+      const preferences = await fetchUserPreferences();
+      setShowSchoolHub(preferences.showSchoolHub);
+      setWaterIntake(preferences.waterIntakeCups);
+      setLastSleepEntry(preferences.lastSleepEntry);
+    };
+    loadPreferences();
+  }, []);
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header (with our logic) */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
-        <p className="text-blue-100">Ready to tackle your studies today?</p>
+        <h1 className="text-3xl font-bold mb-2">
+          {showSchoolHub ? 'School Hub' : 'Welcome Back!'}
+        </h1>
+        <p className="text-blue-100">
+          {showSchoolHub ? 'organize faster - stress less' : 'Ready to tackle your studies today?'}
+        </p>
         
         {todayAssignments.length > 0 && (
           <div className="mt-4 bg-white/10 rounded-lg p-3">
@@ -49,7 +84,40 @@ export default function Dashboard({ subjects, assignments, onViewAssignments, on
         )}
       </div>
 
-      {/* Quick Stats */}
+      {/* Our Custom Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Water Tracker Widget */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-600">Hydration</p>
+            <div className="flex items-center gap-2">
+              <Droplet className="h-8 w-8 text-blue-500" />
+              <p className="text-2xl font-bold text-gray-900">{waterIntake}</p>
+            </div>
+          </div>
+          <button onClick={handleWaterIncrement} className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+            <Plus size={24} />
+          </button>
+        </div>
+        
+        {/* Sleep Diary Widget */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-600">Last Night's Sleep</p>
+            {lastSleepEntry ? (
+              <div className="flex items-center gap-2">
+                <Moon className="h-8 w-8 text-purple-500" />
+                <p className="text-2xl font-bold text-gray-900">{lastSleepEntry.totalHours} hrs</p>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Log your first entry!</p>
+            )}
+          </div>
+          {/* TODO: Add button to open sleep modal */}
+        </div>
+      </div>
+      
+      {/* Existing Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
@@ -98,7 +166,7 @@ export default function Dashboard({ subjects, assignments, onViewAssignments, on
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Existing Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upcoming Assignments */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
