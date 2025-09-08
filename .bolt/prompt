@@ -1,0 +1,47 @@
+General Rules & Design Philosophy
+All designs must be beautiful, not cookie cutter, and worthy for production. The UI should be user-centric, simple, and highly accessible. Prioritize clarity and avoid visual clutter.
+
+Technical Stack: Use JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other UI packages unless absolutely necessary.
+
+Visual Identity: A mobile-first design approach is mandatory. The app should have a defined, cohesive look and feel with a consistent color palette and typography chosen for readability.
+
+UI Elements:
+
+Schools dropdown: Only includes {Select your School, British School Muscat (BSM)}.
+
+Year Group dropdown: Only includes {Year 5 - Year 11}.
+
+The curriculum option is removed completely.
+
+The Subjects management page (in SETTINGS) has only two buttons: Add Subject and Use School Subjects.
+
+All Modern Foreign Languages (MFL) must be chosen via a popup modal.
+
+All subjects are batch-inserted (atomic insert), with no duplicates allowed.
+
+Existing subject rows retain edits (color, 'Has book?' toggle, teacher, room).
+
+The subject row format must be: [colour] [subject] Has book? [toggle] teacher [icon] location [icon].
+
+Content: Do not generate any subjects beyond the lists provided. Do not alter UI sections not explicitly specified.
+
+Subject Lists
+Year 5: English, Maths, Science, Humanities, Art, Music, PE, Library, Spelling/Reading, Computing, plus 1 MFL (French, Spanish, Arabic via popup).
+
+Year 6: English (#6bcfd5), Swimming (#4b87d1), Humanities (#cf6bd5), Maths (#d5806b), PE (#27a69c), Music Instrumental (#b58f3c), Spelling/Reading (#8c3c3c), Science (#9c5b27), PSHE (#6b9cd5), Library (#a65d27), Music (#d59c6b), Computing (#6bd59c), Art (#cf6b6b), Design & Technology (#806bd5), plus 2 distinct MFLs.
+
+Years 7 & 8: A popup must ask the user to select two distinct MFLs. The app will then auto-add: English, Maths, Science, Design & Technology, Art, Computing, Geography, History, PE, Library, Drama, Music, + the 2 chosen MFLs.
+
+Year 9: English #75d66b, Math #6b9cd6, Science #e36a6a, Design & Technology #b85151, Art #6b7fd6, Computing #b8b4b0, Geography #c26bd6, History #d59b6b, PE #e5ca4b, Library #a1d4e0, Drama #e59ac3, Music #d36bd6, plus 1 MFL (via popup).
+
+Years 10 & 11 (GCSE flow): A popup with five steps will guide the user through subject selection. Core subjects (English Language, English Literature, Maths, and the chosen Science) are always included in the final batch insert.
+
+Science → Combined OR Triple.
+
+Humanities → History OR Geography.
+
+MFL → French, Spanish, Arabic, or None.
+
+Arts/Performance → must pick at least one {Art, Drama, Music, Design & Tech}.
+
+Additional → multi-select {Comp Sci, Business, Econ, PE, RE, others}.
